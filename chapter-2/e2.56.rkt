@@ -5,7 +5,7 @@
   (and (variable? a1) (variable? a2) (eq? a1 a2)))
 
 (define (sum? e)
-  (eq? (car e) '+))
+  (and (pair? e) (eq? (car e) '+)))
 
 (define (addend e)
   (cadr e))
@@ -22,3 +22,18 @@
         ((and (number? a1) (number? a2)) (+ a1 a2))
         (else (list '+ a1 a2))))
 
+(define (product? e)
+  (and (pair? e) (eq? (car e) '*)))
+
+(define (multiplier e)
+  (cadr e))
+
+(define (multiplicand e)
+  (caddr e))
+
+(define (make-product m1 m2)
+  (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+        ((=number? m1 1) m2)
+        ((=number? m2 1) m1)
+        ((and (number? m1) (number? m2)) (* m1 m2))
+        (else (list '* m1 m2))))
