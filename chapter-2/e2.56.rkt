@@ -41,6 +41,7 @@
 (define (make-exponentiation base exponent)
   (cond ((= exponent 0) 1)
         ((= exponent 1) base)
+        ((= base 1) 1)
         (else (list '** base exponent))))
 
 (define (exponentiation? exp)
