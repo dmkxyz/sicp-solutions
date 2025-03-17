@@ -94,7 +94,7 @@
 
 (define (successive-merge set)
   (if (eq? (length set) 1)
-      set
+      (car set)
       (successive-merge
        (adjoin-set (make-code-tree (car set) (cadr set)) (cddr set)))))
 
