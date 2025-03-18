@@ -111,6 +111,4 @@
 (newline)
 (length encoded-song)
 (decode encoded-song tree)
-(encode '(get a) tree)
-
 
