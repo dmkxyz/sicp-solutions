@@ -1,14 +1,68 @@
-#lang sicp
-(define (deriv exp var)
-  (cond ((number? exp) 0)
-        ((variable? exp) (if (same-variable? exp var) 1 0))
-        (else ((get 'deriv (operator exp)) (operands exp) var))))
+#lang racket
+
+(define (accumulate op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+          (accumulate op initial (cdr sequence)))))
+(define *op-table* (make-hash))
+
+(define (put op type proc)
+  (hash-set! *op-table* (list op type) proc))
+
+(define (get op type)
+  (hash-ref *op-table* (list op type) '()))
+
+  (define (deriv exp var)
+    (cond ((number? exp) 0)
+          ((variable? exp) (if (same-variable? exp var) 1 0))
+          (else ((get 'deriv (operator exp)) (operands exp) var))))
 
 (define (operator exp) (car exp))
 
-(define (operand exp) (cdr exp))
+  (define (operands exp) (cdr exp))
 
-(define (variable? x) (symbol? x))
+  (define (variable? x) (symbol? x))
 
-(define (same-variable? a1 a2)
-  (and (variable? a1) (variable? a2) (eq? a1 a2)))
+  (define (same-variable? a1 a2)
+    (and (variable? a1) (variable? a2) (eq? a1 a2)))
+
+(define (install-deriv-package)
+  ;; internal procedures
+  (define (=number? exp num)
+    (and (number? exp) (= exp num)))
+
+  (define (addend e) (car e))
+
+  (define (augend e) (accumulate make-sum 0 (cdr e)))
+
+  (define (make-sum a1 a2)
+    (cond ((=number? a1 0) a2)
+          ((=number? a2 0) a1)
+          ((and (number? a1) (number? a2)) (+ a1 a2))
+          (else (list '+ a1 a2))))
+
+  (define (multiplier e) (car e))
+
+  (define (multiplicand e) (accumulate make-product 1 (cdr e)))
+
+  (define (make-product m1 m2)
+    (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+          ((=number? m1 1) m2)
+          ((=number? m2 1) m1)
+          ((and (number? m1) (number? m2)) (* m1 m2))
+          (else (list '* m1 m2))))
+  
+  ;; interface to the rest of the system
+  (put 'deriv '+ (lambda (operands var) (make-sum (deriv (addend operands) var)
+                                                 (deriv (augend operands) var))))
+
+  (put 'deriv '* (lambda (operands var) (make-sum
+                                        (make-product (multiplier operands)
+                                                      (deriv (multiplicand operands) var))
+                                        (make-product (deriv (multiplier operands) var)
+                                                      (multiplicand operands)))))
+
+  'done)
+
+(install-deriv-package)
