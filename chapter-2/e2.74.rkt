@@ -52,6 +52,21 @@
           ((=number? m2 1) m1)
           ((and (number? m1) (number? m2)) (* m1 m2))
           (else (list '* m1 m2))))
+
+  (define (make-exponentiation b e)
+    (cond ((=number? e 0) 1)
+          ((=number? e 1) b)
+          ((=number? b 1) 1)
+          (else (list '** b e))))
+
+  (define (exponentiation? exp)
+    (and (pair? exp) (eq? (car exp) '**)))
+
+  (define (base exp)
+    (car exp))
+
+  (define (exponent exp)
+    (cadr exp))
   
   ;; interface to the rest of the system
   (put 'deriv '+ (lambda (operands var) (make-sum (deriv (addend operands) var)
@@ -62,6 +77,11 @@
                                                       (deriv (multiplicand operands) var))
                                         (make-product (deriv (multiplier operands) var)
                                                       (multiplicand operands)))))
+
+  (put 'deriv '** (lambda (operands var) (make-product (exponent operands) 
+                                                       (make-product
+                                                        (make-exponentiation (base operands) (- (exponent operands) 1))
+                                                        (deriv (base operands) var)))))
 
   'done)
 

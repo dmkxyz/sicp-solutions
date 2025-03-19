@@ -86,3 +86,5 @@
           ((element-of-set? symbol (symbols (right-branch tree)))
            (cons 1 (encode-symbol symbol (right-branch tree))))
           (else (error "symbol not present in tree -- ENCODE-SYMBOL" symbol))))
+
+

@@ -44,11 +44,11 @@
         ((and (number? m1) (number? m2)) (* m1 m2))
         (else (list m1 '* m2))))
 
-(define (make-exponentiation base exponent)
-  (cond ((= exponent 0) 1)
-        ((= exponent 1) base)
-        ((= base 1) 1)
-        (else (list '** base exponent))))
+(define (make-exponentiation b e)
+    (cond ((=number? e 0) 1)
+          ((=number? e 1) b)
+          ((=number? b 1) 1)
+          (else (list '** b e))))
 
 (define (exponentiation? exp)
   (and (pair? exp) (eq? (car exp) '**)))
@@ -70,7 +70,7 @@
          (make-sum
           (make-product (multiplier exp)
                         (deriv (multiplicand exp) var))
-          (make-product (deriv (multiplier exp) var)
+          (make-product (deriv (multiplier exp) var) 
                         (multiplicand exp))))
         ((exponentiation? exp)
          (make-product (deriv (base exp) var)
