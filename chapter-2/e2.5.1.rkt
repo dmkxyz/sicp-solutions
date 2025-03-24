@@ -215,10 +215,9 @@
   (install-complex-package))
 
 (numeric-package)
-(add (make-scheme-number 1) (make-scheme-number 2))
-(mul (make-rational 1 2) (make-rational 3 4))
-(make-complex-from-real-imag 1 1)
-(make-complex-from-mag-ang 1 0)
-(trace apply-generic)
+(trace)
+(define z1 (make-complex-from-mag-ang 1 0))
+(define z2 (make-complex-from-real-imag 1 1))
+(trace get)
+(magnitude z1)
 
-(sub (make-complex-from-mag-ang 1 0) (make-complex-from-real-imag 1 1))
