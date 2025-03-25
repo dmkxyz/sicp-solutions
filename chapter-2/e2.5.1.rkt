@@ -31,6 +31,7 @@
 (define (sub x y) (apply-generic 'sub x y))
 (define (mul x y) (apply-generic 'mul x y))
 (define (div x y) (apply-generic 'div x y))
+(define (equ? x y) (apply-generic 'equ? x y))
 
 (define (apply-generic op . args)
   (let ((type-tags (map type-tag args)))
@@ -53,6 +54,8 @@
        (lambda (x y) (tag (* x y))))
   (put 'div '(scheme-number scheme-number)
        (lambda (x y) (tag (/ x y))))
+  (put 'equ? '(scheme-number scheme-number)
+       (lambda (x y) (= x y)))
   (put 'make 'scheme-number
        (lambda (x) (tag x)))
   'done)
@@ -95,6 +98,8 @@
        (lambda (x y) (tag (div-rat x y))))
   (put 'make 'rational
        (lambda (n d) (tag (make-rat n d))))
+  (put 'equ? '(rational rational)
+       (lambda (x y) (= (* (numer x) (denom y)) (* (numer y) (denom x)))))
   'done)
 
 (define (make-rational n d)
@@ -194,6 +199,8 @@
        (lambda (z1 z2) (tag (mul-complex z1 z2))))
   (put 'div '(complex complex)
        (lambda (z1 z2) (tag (div-complex z1 z2))))
+  (put 'equ? '(complex complex)
+       (lambda (z1 z2) (and (= (real-part z1) (real-part z2)) (= (imag-part z1) (imag-part z2)))))
 
   (put 'real-part '(complex) real-part)
   (put 'imag-part '(complex) imag-part)
