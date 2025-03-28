@@ -313,7 +313,11 @@
   (define (make-term order coeff) (list order coeff))
   (define (order term) (car term))
   (define (coeff term) (cadr term))
-         
+
+  (define (check-zero-coeff term-list)
+    (or (empty-termlist? term-list)
+        (and (=zero? (coeff (first-term term-list))) (check-zero-coeff (rest-terms term-list)))))
+        
   ;; interface with the rest of the system
   (define (tag p) (attach-tag 'polynomial p))
 
@@ -325,6 +329,9 @@
 
   (put 'make 'polynomial
        (lambda (var terms) (tag (make-poly var terms))))
+
+  (put '=zero? '(polynomial)
+       (lambda (p) (check-zero-coeff (term-list p))))
   
   'done)
 
