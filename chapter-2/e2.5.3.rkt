@@ -25,6 +25,7 @@
 
 (define (get op type)
   (hash-ref *op-table* (list op type) '()))
+
 (define (add x y) (apply-generic 'add x y))
 (define (sub x y) (apply-generic 'sub x y))
 (define (mul x y) (apply-generic 'mul x y))
@@ -232,14 +233,6 @@
 (define (make-complex-from-mag-ang r a)
     ((get 'make-from-mag-ang 'complex) r a))
 
-(define (numeric-package)
-  (install-scheme-number-package)
-  (install-rational-package)
-  (install-complex-package))
-
-(define (make-polynomial var terms)
-  ((get 'make 'polynomial) var terms))
-
 (define (install-polynomial-package)
   ;; internal procedures
   (define (variable? x) (symbol? x))
@@ -260,6 +253,12 @@
                    (add-terms (term-list p1)
                               (term-list p2)))
         (error "Polys not in same var -- ADD-POLY" (list p1 p2))))
+
+  (define (sub-poly p1 p2)
+    (if (same-variable? (variable p1) (variable p2))
+        (add (tag p1)
+             (mul (tag p2) (make-polynomial 'x '((0 -1)))))
+        (error "Polys not in same var -- SUB-POLY" (list p1 p2))))
 
   (define (mul-poly p1 p2)
     (if (same-variable? (variable p1) (variable p2))
@@ -324,6 +323,9 @@
   (put 'add '(polynomial polynomial)
        (lambda (p1 p2) (tag (add-poly p1 p2))))
 
+  (put 'sub '(polynomial polynomial)
+       (lambda (p1 p2) (sub-poly p1 p2)))
+
   (put 'mul '(polynomial polynomial)
        (lambda (p1 p2) (tag (mul-poly p1 p2))))
 
@@ -332,8 +334,16 @@
 
   (put '=zero? '(polynomial)
        (lambda (p) (check-zero-coeff (term-list p))))
-  
+
   'done)
+
+(define (make-polynomial var terms)
+  ((get 'make 'polynomial) var terms))
+
+(define (numeric-package)
+  (install-scheme-number-package)
+  (install-rational-package)
+  (install-complex-package))
 
 (numeric-package)
 (install-polynomial-package)
