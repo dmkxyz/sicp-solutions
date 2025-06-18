@@ -1,0 +1,17 @@
+#lang sicp
+(define (count-pairs x)
+  (if (not (pair? x))
+      0
+      (+ (count-pairs (car x))
+         (count-pairs (cdr x))
+         1)))
+
+(define one-1 (cons 'a '()))
+(define two-2 (cons 'a (cons 'b '())))
+(define two-3 (cons one-1 one-1))
+(define three-3 (cons 'a (cons 'b (cons 'c '()))))
+(define three-4 (cons 'a (cons one-1 one-1)))
+(define three-5 (cons two-2 two-2))
+(define three-7 (cons two-3 two-3))
+
+

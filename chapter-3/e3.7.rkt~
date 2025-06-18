@@ -1,0 +1,31 @@
+#lang sicp
+
+(define (make-account balance password)
+  (let ((first-password password)
+        (second-password 'NONE))
+
+    (define (withdraw amount)
+          (if (>= balance amount)
+              (begin (set! balance (- balance amount))balance)
+              "Insufficient balance"))
+
+
+    (define (deposit amount)
+            (set! balance (+ balance amount)))
+
+
+    (define (set-new-password new-password)
+         (set! second-password new-password))
+     
+    (define (dispatch pwd op)
+      (cond ((and (or (eq? pwd first-password) (eq? pwd second-password)) (eq? op 'withdraw)) withdraw)
+            ((and (or (eq? pwd first-password) (eq? pwd second-password)) (eq? op 'deposit)) deposit)
+            ((not (or (eq? pwd first-password) (eq? pwd second-password))) (lambda (x) "Incorrect password"))
+            ((and (eq? pwd first-password) (eq? op 'make-joint)) set-new-password)
+            (else (error "Unknown request -- MAKE-ACCOUNT" op))))
+
+     dispatch))
+
+(define (make-joint account first-password new-password)
+  (begin ((account first-password 'make-joint) new-password)
+         account))
